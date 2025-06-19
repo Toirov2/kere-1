@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uzum Market - Kredit Olish Formasi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=your-yandex-api-key"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f4f4f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    header {
+      background: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .profile-btn,
+    .cart-btn {
+      background: #fff;
+      border: none;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .profile-btn svg,
+    .cart-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: #808080;
+      transition: stroke 0.3s;
+    }
+
+    .profile-btn:hover svg,
+    .cart-btn:hover svg {
+      stroke: #333;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-section {
+      display: flex;
+      gap: 10px;
+      padding: 15px 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-section input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .search-section button {
+      background: #fff;
+      color: #666;
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .catalog-panel {
+      position: fixed;
+      top: 0;
+      left: -270px;
+      width: 250px;
+      height: 100%;
+      background: #fff;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      padding: 20px;
+      transition: left 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .catalog-panel.active {
+      left: 0;
+    }
+
+    .catalog-panel .close-catalog-btn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+      font-weight: 700;
+    }
+
+    .catalog-panel ul {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .catalog-panel li {
+      padding: 10px;
+      color: #333;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .catalog-panel li:hover {
+      color: #0057a3;
+      background: #f0f0f0;
+    }
+
+    .product-banner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #007bff, #00c4b4);
+      color: white;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 16px;
+      min-height: 250px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-banner .banner-text {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .product-banner .banner-products {
+      display: flex;
+      gap: 15px;
+      overflow: hidden;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .product-banner .banner-product {
+      flex: 0 0 auto;
+      width: 150px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .product-banner .banner-product img {
+      width: 100%;
+      height: 100px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .product-banner .banner-product h4 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-banner .banner-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 10px;
+      border-radius: 50%;
+    }
+
+    .product-banner .prev-btn {
+      left: 10px;
+    }
+
+    .product-banner .next-btn {
+      right: 10px;
+    }
+
+    .product-banner .dots {
+      position: absolute;
+      bottom: 10px;
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .product-banner .dot {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    .product-banner .dot.active {
+      opacity: 1;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .product {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image-container {
+      position: relative;
+      width: 100%;
+      height: 120px;
+    }
+
+    .product img {
+      width: 100%;
+      height: 120px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      transition: transform 0.3s;
+    }
+
+    .product:hover img {
+      transform: scale(1.05);
+    }
+
+    .product h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product p {
+      font-weight: 700;
+      color: #e91e63;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .product button {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: auto;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .product button:hover {
+      background: #45a049;
+      transform: scale(1.05);
+    }
+
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .quantity-selector button {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .quantity-selector button:hover {
+      background: #45a049;
+      transform: scale(1.05);
+    }
+
+    .quantity-selector span {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .cart-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .cart-form.active {
+      display: block;
+    }
+
+    .cart-form h3 {
+      margin-top: 0;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .cart-items {
+      margin: 10px 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-weight: 400;
+    }
+
+    #map {
+      height: 250px;
+      width: 100%;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    .cart-form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .cart-form input,
+    .cart-form select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .cart-form input[readonly] {
+      background: #f0f0f0;
+      cursor: not-allowed;
+    }
+
+    .cart-form button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .cart-form .submit-btn {
+      background: #4caf50;
+      color: white;
+    }
+
+    .cart-form .close-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .cart-form .get-location-btn {
+      background: #0057a3;
+      color: white;
+      padding: 8px;
+      font-size: 13px;
+      width: auto;
+      margin: 5px 0;
+    }
+
+    .saved-addresses-list {
+      margin: 10px 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .saved-address-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+
+    .saved-address-item span {
+      font-size: 14px;
+      font-weight: 400;
+      flex: 1;
+    }
+
+    .saved-address-item button {
+      padding: 5px 8px;
+      font-size: 12px;
+      margin-left: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .saved-address-item .select-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+    }
+
+    .saved-address-item .delete-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+    }
+
+    .profile-form {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1002;
+      width: 90%;
+      max-width: 400px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .profile-form.active {
+      display: flex;
+    }
+
+    .profile-form h3 {
+      font-size: 20px;
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .profile-form label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .profile-form input {
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .profile-form input:focus {
+      border-color: #0057a3;
+      outline: none;
+    }
+
+    .profile-form button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 10px;
+    }
+
+    .profile-form .save-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .profile-form .close-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .profile-form .sms-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .receipt-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1003;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .receipt-modal.active {
+      display: block;
+    }
+
+    .receipt-modal h3 {
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .receipt-modal button {
+      width: 100%;
+      padding: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1004;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .image-modal.active {
+      display: flex;
+    }
+
+    .image-modal img {
+      max-width: 90%;
+      max-height: 80vh;
+      border-radius: 10px;
+    }
+
+    .image-modal .close-image-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .product-details-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1005;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .product-details-modal.active {
+      display: block;
+    }
+
+    .product-details-modal img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .product-details-modal .price {
+      color: #e91e63;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .product-details-modal .image-gallery {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .product-details-modal .image-gallery img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .product-details-modal .image-gallery img:hover {
+      transform: scale(1.1);
+    }
+
+    .product-details-modal .description {
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .product-details-modal button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .product-details-modal .add-to-cart-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .product-details-modal .close-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .nav-buttons button {
+      background: #0057a3;
+      color: white;
+      padding: 8px 10px;
+      width: auto;
+    }
+
+    footer {
+      background: #fff;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+      color: #666;
+      font-size: 14px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: auto;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .footer-links a {
+      color: #0057a3;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-contact p {
+      margin: 5px 0;
+    }
+
+    .footer-social a {
+      color: #666;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+
+    .footer-social a:hover {
+      color: #0057a3;
+    }
+
+    .footer-copyright {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .cart-btn svg {
+      stroke: #808080;
+    }
+
+    @media (max-width: 600px) {
+      .search-section {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .search-section input {
+        min-width: 150px;
+        font-size: 14px;
+        padding: 8px;
+      }
+
+      .search-section button {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
+      .logo {
+        font-size: 20px;
+      }
+
+      .catalog-panel {
+        width: 200px;
+        left: -220px;
+      }
+
+      .catalog-panel.active {
+        left: 0;
+      }
+
+      .product-banner {
+        min-height: 220px;
+        font-size: 14px;
+        margin: 10px;
+        padding: 15px;
+      }
+
+      .product-banner .banner-text {
+        font-size: 18px;
+      }
+
+      .product-banner .banner-product {
+        width: 120px;
+      }
+
+      .product-banner .banner-product img {
+        height: 80px;
+      }
+
+      .products {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+      }
+
+      .cart-form {
+        width: 95vw;
+        padding: 15px;
+      }
+
+      #map {
+        height: 200px;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .footer-links a {
+        margin: 5px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .cart-form {
+        width: 90vw;
+        padding: 15px;
+      }
+
+      #map {
+        height: 200px;
+      }
+
+      .cart-form button {
+        width: 100%;
+        margin: 5px 0;
+      }
+
+      .saved-address-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .select-btn, .delete-btn {
+        width: 100%;
+        margin: 2px 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-section input {
+        min-width: 120px;
+        font-size: 12px;
+        padding: 6px;
+      }
+
+      .search-section button {
+        padding: 6px 8px;
+        font-size: 10px;
+      }
+
+      .cart-form {
+        font-size: 0.9em;
+        padding: 10px;
+      }
+
+      #map {
+        height: 180px;
+      }
+
+      .cart-form button {
+        font-size: 0.9em;
+        padding: 6px;
+      }
+
+      .product-banner .banner-product {
+        width: 100px;
+      }
+
+      .product-banner .banner-product img {
+        height: 60px;
+      }
+
+      .product-banner .banner-text {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Uzum Market</div>
+    <div class="header-buttons">
+      <select id="languageSelect" onchange="updateLang()">
+        <option value="uz">O'zbek</option>
+        <option value="ru">Русский</option>
+      </select>
+      <button onclick="showProfileModal()" class="profile-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 12C14.2 12 16 10.2 16 8C16 5.8 14.2 4 12 4C9.8 4 8 5.8 8 8C8 10.2 9.8 12 12 12ZM12 14C9.34 14 4 15.34 4 18V20H20V18C20 15.34 14.66 14 12 14Z" fill="#808080" />
+        </svg>
+      </button>
+      <button onclick="showCartModal()" class="cart-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path stroke="#808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 3H5L5.4 5M7 13H17L19 5H5.4M7 13L6 18H18L17 13M9 21C9 21.55 8.55 22 8 22C7.45 22 7 21.55 7 21C7 20.45 7.45 20 8 20C8.55 20 9 20.45 9 21ZM17 21C17 21.55 16.55 22 16 22C15.45 22 15 21.55 15 21C15 20.45 15.45 20 16 20C16.55 20 17 20.45 17 21Z" />
+        </svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+  <main>
+    <div class="search-section">
+      <button onclick="toggleCatalog()">Katalog</button>
+      <input type="search" id="searchInput" placeholder="Mahsulot qidir...">
+    </div>
+
+    <div class="catalog-panel" id="catalogPanel">
+      <button class="close-catalog-btn" onclick="closeCatalog()">×</button>
+      <ul>
+        <li onclick="filterCategory('Elektronika')">Elektronika</li>
+        <li onclick="filterCategory('Ichimlik')">Ichimlik</li>
+        <li onclick="filterCategory('Meva')">Meva</li>
+        <li onclick="filterCategory('Barchasi')">Barchasi</li>
+      </ul>
+    </div>
+
+    <div class="product-banner" id="productBanner">
+      <div class="banner-text">🔥 Maxsus Chegirmalar! 🔥</div>
+      <div class="banner-nav prev-btn" onclick="moveBanner(-1)"><</div>
+      <div class="banner-products" id="bannerCards"></div>
+      <div class="banner-nav next-btn" onclick="moveBanner(1)">></div>
+      <div class="dots" id="bannerDots"></div>
+    </div>
+
+    <div id="products" class="products"></div>
+
+    <div class="cart-form" id="cartModal">
+      <h3>Kredit olish uchun ariza</h3>
+      <div class="cart-items" id="cartItems"></div>
+      <p id="totalPrice" style="font-weight: bold; text-align: right;"></p>
+      <label>Telefon raqami:</label>
+      <input type="tel" id="phoneNumber" placeholder="+998 90 123 45 67" required>
+      <label>Qo‘shimcha telefon raqami (ixtiyoriy):</label>
+      <input type="tel" id="additionalPhone" placeholder="+998 90 123 45 67">
+      <label>Saqlangan manzillar:</label>
+      <div class="saved-addresses-list" id="savedAddressesList"></div>
+      <label for="selectedAddress">Yetkazib berish manzili:</label>
+      <button class="get-location-btn" onclick="getCurrentLocation()">Joriy manzilni aniqlash</button>
+      <div id="map"></div>
+      <input type="text" id="selectedAddress" placeholder="Tanlangan manzil avtomatik ko'rsatiladi" readonly>
+      <label>To‘lov turi:</label>
+      <select id="paymentType" onchange="togglePaymentFields()">
+        <option value="cash">Naqt pul</option>
+        <option value="card">Karta</option>
+        <option value="credit">Kredit</option>
+      </select>
+      <div id="cardFields" class="hidden">
+        <label>Karta raqami (Toshkent banklari):</label>
+        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+        <label>Amal qilish muddati (MM/YY):</label>
+        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+      </div>
+      <div id="creditFields" class="hidden">
+        <label>Kredit karta raqami (16 raqam):</label>
+        <input type="text" id="creditCardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+        <label>Telefon raqami:</label>
+        <input type="tel" id="creditPhoneNumber" placeholder="+998 90 123 45 67" required>
+        <label>Qo‘shimcha telefon raqami (ixtiyoriy):</label>
+        <input type="tel" id="creditAdditionalPhone" placeholder="+998 90 123 45 67">
+        <label>Karta egasining F.I.Sh:</label>
+        <input type="text" id="cardHolderName" placeholder="Karta egasi ismi" required>
+        <label>Pasport seriya va raqami yoki ID karta raqami:</label>
+        <input type="text" id="creditPassport" placeholder="AA1234567 yoki ID123456789" required>
+        <label>JSHSHIR (INN):</label>
+        <input type="text" id="creditInn" placeholder="123456789012" required>
+        <label>Tug‘ilgan sana:</label>
+        <input type="date" id="birthDate" required>
+        <label>Doimiy yashash manzili:</label>
+        <input type="text" id="permanentAddress" placeholder="Doimiy manzilingiz" required>
+        <label>Ro‘yxatdan o‘tgan manzil (propiska):</label>
+        <input type="text" id="registeredAddress" placeholder="Propiska manzilingiz" required>
+        <label>Karta amal qilish muddati (MM/YY):</label>
+        <input type="text" id="creditCardExpiry" placeholder="MM/YY" maxlength="5" required>
+        <label>Karta orqasidagi CVV (3 raqam):</label>
+        <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+        <label>Kredit muddati:</label>
+        <select id="months" required>
+          <option value="3">3 oy</option>
+          <option value="6">6 oy</option>
+          <option value="12">12 oy</option>
+        </select>
+        <label>Oylik daromadingiz (so‘mda):</label>
+        <input type="number" id="salary" placeholder="Oylik maosh" required>
+      </div>
+      <label><input type="checkbox" id="agree" required> Hamma shartlariga roziman</label>
+      <button class="submit-btn" onclick="submitCart()">Tasdiqlash</button>
+      <button class="close-btn" onclick="closeCartModal()">Yopish</button>
+    </div>
+
+    <div class="profile-form" id="profileModal">
+      <h3>Profil sozlamalari</h3>
+      <label for="firstName">Ism</label>
+      <input type="text" id="firstName" placeholder="Ismingizni kiriting">
+      <label for="lastName">Familiya</label>
+      <input type="text" id="lastName" placeholder="Familiyangizni kiriting">
+      <label for="profilePhone">Telefon raqami</label>
+      <input type="tel" id="profilePhone" placeholder="+998 XX XXX XX XX">
+      <button class="sms-btn" onclick="sendSMS()">SMS kod yuborish</button>
+      <label id="smsCodeLabel" style="display: none;">SMS kod</label>
+      <input type="text" id="smsCode" placeholder="4 raqamli kodni kiriting" style="display: none;">
+      <button class="save-btn" onclick="saveProfile()">Saqlash</button>
+      <button class="close-btn" onclick="closeProfileModal()">Yopish</button>
+    </div>
+
+    <div class="receipt-modal" id="receiptModal">
+      <h3>Buyurtma cheki</h3>
+      <div id="receiptContent"></div>
+      <button onclick="closeReceiptModal()">Yopish</button>
+    </div>
+
+    <div class="image-modal" id="imageModal">
+      <button class="close-image-btn" onclick="closeImageModal()">×</button>
+      <img id="fullImage" src="" alt="">
+    </div>
+
+    <div class="product-details-modal" id="productDetailsModal">
+      <img id="detailImage" src="" alt="" onclick="showFullImage(this.src)">
+      <h3 id="detailName"></h3>
+      <div class="price" id="detailPrice"></div>
+      <div class="image-gallery" id="detailImageGallery"></div>
+      <div class="description" id="detailDescription"></div>
+      <div class="nav-buttons">
+        <button onclick="changeImage(-1)">←</button>
+        <button onclick="changeImage(1)">→</button>
+      </div>
+      <button class="add-to-cart-btn" onclick="addToCartModal()">Savatga qo'sh</button>
+      <button class="close-btn" onclick="closeProductModal()">×</button>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">Uzum Market</div>
+      <div class="footer-links">
+        <a href="./biz-haqimizda.html">Biz haqimizda</a>
+        <a href="./ishga.html">Ishga Qabul</a>
+        <a href="#">Shartlar</a>
+      </div>
+      <div class="footer-contact">
+        <p>Telefon: +998 (93) 857- 33 - 11</p>
+        <p>Email: support@gmail.com</p>
+      </div>
+      <div class="footer-social">
+        <a href="h">Telegram</a>
+        <a href="">Instagram</a>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      © 2025 Uzum Market. Barcha huquqlar himoyalangan.
+    </div>
+  </div>
+</footer>
+<script>
+  const translations = {
+  uz: {
+    searchPlaceholder: "Mahsulot qidir...",
+    catalog: "Katalog",
+    cartTitle: "Kredit olish uchun ariza",
+    phoneLabel: "Telefon raqami:",
+    additionalPhone: "Qo‘shimcha telefon raqami (ixtiyoriy):",
+    savedAddressesLabel: "Saqlangan manzillar:",
+    addressLabel: "Yetkazib berish manzili:",
+    addressPlaceholder: "Tanlangan manzil avtomatik ko'rsatiladi",
+    getLocation: "Joriy manzilni aniqlash",
+    paymentType: "To‘lov turi:",
+    cardNumberLabel: "Karta raqami (Toshkent banklari):",
+    cardExpiryLabel: "Amal qilish muddati (MM/YY):",
+    creditCardNumber: "Kredit karta raqami (16 raqam):",
+    creditPhone: "Telefon raqami:",
+    creditAdditionalPhone: "Qo‘shimcha telefon raqami (ixtiyoriy):",
+    cardHolderName: "Karta egasining F.I.Sh:",
+    creditPassport: "Pasport seriya va raqami yoki ID karta raqami:",
+    creditInn: "JSHSHIR (INN):",
+    birthDate: "Tug‘ilgan sana:",
+    permanentAddress: "Doimiy yashash manzili:",
+    registeredAddress: "Ro‘yxatdan o‘tgan manzil (propiska):",
+    creditCardExpiry: "Karta amal qilish muddati (MM/YY):",
+    cvv: "Karta orqasidagi CVV (3 raqam):",
+    creditPeriod: "Kredit muddati:",
+    salaryLabel: "Oylik daromadingiz (so‘mda):",
+    agreeLabel: "Hamma shartlariga roziman",
+    submitBtn: "Tasdiqlash",
+    closeBtn: "Yopish",
+    profileTitle: "Profil sozlamalari",
+    firstNameLabel: "Ism:",
+    firstNamePlaceholder: "Ismingizni kiriting",
+    lastNameLabel: "Familiya:",
+    lastNamePlaceholder: "Familiyangizni kiriting",
+    profilePhoneLabel: "Telefon raqami:",
+    smsButton: "SMS kod yuborish",
+    smsLabel: "SMS kod:",
+    smsPlaceholder: "4 raqamli kodni kiriting",
+    saveProfile: "Saqlash",
+    receiptTitle: "Buyurtma cheki",
+    addToCartButton: "Savatga qo'sh",
+    productDetailsCloseButton: "×",
+    about: "Biz haqimizda",
+    help: "Ishga qabul",
+    terms: "Shartlar",
+    electronics: "Elektronika",
+    drinks: "Ichimlik",
+    fruits: "Meva",
+    all: "Barchasi",
+    noSavedAddresses: "Saqlangan manzillar mavjud emas",
+    receiptName: "Ism:",
+    receiptLastName: "Familiya:",
+    receiptAddress: "Manzil:",
+    receiptPhone: "Telefon raqami:",
+    receiptOrderTime: "Zakaz vaqti:",
+    receiptProducts: "Mahsulotlar:",
+    receiptTotal: "Jami:",
+    cash: "Naqt pul",
+    card: "Karta",
+    credit: "Kredit"
+  },
+  ru: {
+    searchPlaceholder: "Поиск товаров...",
+    catalog: "Каталог",
+    cartTitle: "Заявка на кредит",
+    phoneLabel: "Номер телефона:",
+    additionalPhone: "Дополнительный номер телефона (необязательно):",
+    savedAddressesLabel: "Сохраненные адреса:",
+    addressLabel: "Адрес доставки:",
+    addressPlaceholder: "Выбранный адрес отображается автоматически",
+    getLocation: "Определить текущий адрес",
+    paymentType: "Тип оплаты:",
+    cardNumberLabel: "Номер карты (банки Ташкента):",
+    cardExpiryLabel: "Срок действия (MM/YY):",
+    creditCardNumber: "Номер кредитной карты (16 цифр):",
+    creditPhone: "Номер телефона:",
+    creditAdditionalPhone: "Дополнительный номер телефона (необязательно):",
+    cardHolderName: "Ф.И.Ш. владельца карты:",
+    creditPassport: "Серия и номер паспорта или ID карты:",
+    creditInn: "ИНН:",
+    birthDate: "Дата рождения:",
+    permanentAddress: "Адрес постоянного проживания:",
+    registeredAddress: "Адрес регистрации (прописка):",
+    creditCardExpiry: "Срок действия карты (MM/YY):",
+    cvv: "Код CVV (3 цифры):",
+    creditPeriod: "Срок кредита:",
+    salaryLabel: "Месячный доход (в сумах):",
+    agreeLabel: "Согласен со всеми условиями",
+    submitBtn: "Подтвердить",
+    closeBtn: "Закрыть",
+    profileTitle: "Настройки профиля",
+    firstNameLabel: "Имя:",
+    firstNamePlaceholder: "Введите имя...",
+    lastNameLabel: "Фамилия:",
+    lastNamePlaceholder: "Введите фамилию...",
+    profilePhoneLabel: "Номер телефона:",
+    smsButton: "Отправить SMS-код",
+    smsLabel: "SMS-код:",
+    smsPlaceholder: "Введите 4-значный код",
+    saveProfile: "Сохранить",
+    receiptTitle: "Чек заказа",
+    addToCartButton: "Добавить в корзину",
+    productDetailsCloseButton: "×",
+    about: "О нас",
+    help: "Работа",
+    terms: "Условия",
+    electronics: "Электроника",
+    drinks: "Напитки",
+    fruits: "Фрукты",
+    all: "Все",
+    noSavedAddresses: "Сохранённые адреса отсутствуют",
+    receiptName: "Имя:",
+    receiptLastName: "Фамилия:",
+    receiptAddress: "Адрес:",
+    receiptPhone: "Номер телефона:",
+    receiptOrderTime: "Время заказа:",
+    receiptProducts: "Товары:",
+    receiptTotal: "Итого:",
+    cash: "Наличные",
+    card: "Карта",
+    credit: "Кредит"
+  }
+};
+
+let currentLang = 'uz';
+let currentImageIdx = 0;
+let currentProductId = null;
+let cartItems = [];
+let currentCategoryFilter = translations[currentLang].all;
+let map, marker;
+let productImageIdxs = {};
+let smsCode = null;
+let bannerIndex = 0;
+let bannerInterval;
+let savedAddresses = JSON.parse(localStorage.getItem('savedAddresses')) || [];
+let profile = JSON.parse(localStorage.getItem('profile')) || {};
+
+const productsList = [
+  {
+    id: "1",
+    name: "Choy uchun konsentrat ABC maftunkor jasmin, 1.44 litr",
+    name_ru: "Концентрат для чая ABC мафтункор жасмин, 1.44 л",
+    category: "Ichimlik",
+    price: 44990,
+    discountPrice: 35400,
+    images: ["https://via.placeholder.com/300x200?text=Tea+Concentrate", "https://via.placeholder.com/300x200?text=Tea+Alt1"],
+    stock: 8,
+    description: "Tabiiy konsentrat, 1.44 litr",
+    description_ru: "Естественный концентрат, 1.44 л",
+    rating: 4.9,
+    reviews: 569
+  },
+  {
+    id: "2",
+    name: "Sut",
+    name_ru: "Молоко",
+    category: "Ichimlik",
+    price: 7000,
+    images: ["https://via.placeholder.com/300x200?text=Milk", "https://via.placeholder.com/300x200?text=Milk+Alt1"],
+    stock: 50,
+    description: "Tabiiy sut, 1 litr",
+    description_ru: "Естественное молоко, 1 л",
+    rating: 4.5,
+    reviews: 200
+  },
+  {
+    id: "3",
+    name: "Olma",
+    name_ru: "Яблоко",
+    category: "Meva",
+    price: 12000,
+    images: ["https://via.placeholder.com/300x200?text=Apple", "https://via.placeholder.com/300x200?text=Apple+Alt1"],
+    stock: 2100,
+    description: "Yangi olma, 1 kg",
+    description_ru: "Свежие яблоки, 1 кг",
+    rating: 5,
+    reviews: 150
+  },
+  {
+    id: "4",
+    name: "Asal",
+    name_ru: "Мед",
+    category: "Meva",
+    price: 45000,
+    images: ["https://via.placeholder.com/300x200?text=Honey", "https://via.placeholder.com/300x200?text=Honey+Alt1"],
+    stock: 20,
+    description: "Tabiiy asal, 500g",
+    description_ru: "Естественный мед, 500г",
+    rating: 5,
+    reviews: 80
+  },
+  {
+    id: "5",
+    name: "Kofe",
+    name_ru: "Кофе",
+    category: "Ichimlik",
+    price: 15000,
+    images: ["https://via.placeholder.com/300x200?text=Coffee", "https://via.placeholder.com/300x200?text=Coffee+Alt1"],
+    stock: 30,
+    description: "Qovurilgan kofe, 250g",
+    description_ru: "Жареный кофе, 250г",
+    rating: 4.7,
+    reviews: 300
+  },
+  {
+    id: "6",
+    name: "Televizor",
+    name_ru: "Телевизор",
+    category: "Elektronika",
+    price: 4500000,
+    images: ["https://via.placeholder.com/300x200?text=TV", "https://via.placeholder.com/300x200?text=TV+Alt1"],
+    stock: 5,
+    description: "4K Smart TV, 55 dyuym",
+    description_ru: "4K Smart TV, 55 дюймов",
+    rating: 5,
+    reviews: 50
+  },
+  {
+    id: "7",
+    name: "Pufliq basseyn, 950-3853 litr",
+    name_ru: "Надувной бассейн, объём 950-3853 л",
+    category: "Elektronika",
+    price: 377100,
+    discountPrice: 296799,
+    images: ["https://via.placeholder.com/300x200?text=Pool", "https://via.placeholder.com/300x200?text=Pool+Alt1"],
+    stock: 10,
+    description: "Pufliq basseyn, 950-3853 litr",
+    description_ru: "Надувной бассейн, объём 950-3853 л",
+    rating: 4.9,
+    reviews: 423
+  }
+];
+
+function updateLang() {
+  currentLang = document.getElementById('languageSelect').value || 'uz';
+  currentCategoryFilter = translations[currentLang].all;
+  updateTranslations();
+  renderProducts();
+  renderBanner();
+  loadSavedAddresses();
+  updateCartDisplay();
+}
+
+function updateTranslations() {
+  const t = translations[currentLang];
+  document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+  document.querySelector('.search-section button').textContent = t.catalog;
+  document.querySelector('.cart-form h3').textContent = t.cartTitle;
+  document.querySelector('.cart-form label[for="phoneNumber"]').textContent = t.phoneLabel;
+  document.querySelector('.cart-form label[for="additionalPhone"]').textContent = t.additionalPhone;
+  document.querySelector('.cart-form label[for="selectedAddress"]').textContent = t.savedAddressesLabel;
+  document.querySelector('.cart-form label[for="selectedAddress"]').nextElementSibling.nextElementSibling.textContent = t.addressLabel;
+  document.getElementById('selectedAddress').placeholder = t.addressPlaceholder;
+  document.querySelector('.get-location-btn').textContent = t.getLocation;
+  document.querySelector('#cardFields label[for="cardNumber"]').textContent = t.cardNumberLabel;
+  document.querySelector('#cardFields label[for="cardExpiry"]').textContent = t.cardExpiryLabel;
+  document.querySelector('#creditFields label[for="creditCardNumber"]').textContent = t.creditCardNumber;
+  document.querySelector('#creditFields label[for="creditPhoneNumber"]').textContent = t.creditPhone;
+  document.querySelector('#creditFields label[for="creditAdditionalPhone"]').textContent = t.creditAdditionalPhone;
+  document.querySelector('#creditFields label[for="cardHolderName"]').textContent = t.cardHolderName;
+  document.querySelector('#creditFields label[for="creditPassport"]').textContent = t.creditPassport;
+  document.querySelector('#creditFields label[for="creditInn"]').textContent = t.creditInn;
+  document.querySelector('#creditFields label[for="birthDate"]').textContent = t.birthDate;
+  document.querySelector('#creditFields label[for="permanentAddress"]').textContent = t.permanentAddress;
+  document.querySelector('#creditFields label[for="registeredAddress"]').textContent = t.registeredAddress;
+  document.querySelector('#creditFields label[for="creditCardExpiry"]').textContent = t.creditCardExpiry;
+  document.querySelector('#creditFields label[for="cvv"]').textContent = t.cvv;
+  document.querySelector('#creditFields label[for="months"]').textContent = t.creditPeriod;
+  document.querySelector('#creditFields label[for="salary"]').textContent = t.salaryLabel;
+  document.querySelector('.cart-form label[for="agree"]').textContent = t.agreeLabel;
+  document.querySelector('.cart-form .submit-btn').textContent = t.submitBtn;
+  document.querySelector('.cart-form .close-btn').textContent = t.closeBtn;
+  document.querySelector('.profile-form h3').textContent = t.profileTitle;
+  document.querySelector('.profile-form label[for="firstName"]').textContent = t.firstNameLabel;
+  document.getElementById('firstName').placeholder = t.firstNamePlaceholder;
+  document.querySelector('.profile-form label[for="lastName"]').textContent = t.lastNameLabel;
+  document.getElementById('lastName').placeholder = t.lastNamePlaceholder;
+  document.querySelector('.profile-form label[for="profilePhone"]').textContent = t.profilePhoneLabel;
+  document.querySelector('.profile-form .sms-btn').textContent = t.smsButton;
+  document.getElementById('smsCodeLabel').textContent = t.smsLabel;
+  document.getElementById('smsCode').placeholder = t.smsPlaceholder;
+  document.querySelector('.profile-form .save-btn').textContent = t.saveProfile;
+  document.querySelector('.profile-form .close-btn').textContent = t.closeBtn;
+  document.querySelector('.receipt-modal h3').textContent = t.receiptTitle;
+  document.querySelector('.product-details-modal .add-to-cart-btn').textContent = t.addToCartButton;
+  document.querySelector('.product-details-modal .close-btn').textContent = t.productDetailsCloseButton;
+  const footerLinks = document.querySelectorAll('.footer-links a');
+  footerLinks[0].textContent = t.about;
+  footerLinks[1].textContent = t.help;
+  footerLinks[2].textContent = t.terms;
+  const catalogItems = document.querySelectorAll('.catalog-panel li');
+  catalogItems[0].textContent = t.electronics;
+  catalogItems[1].textContent = t.drinks;
+  catalogItems[2].textContent = t.fruits;
+  catalogItems[3].textContent = t.all;
+}
+
+function startAutoSlide() {
+  clearInterval(bannerInterval);
+  bannerInterval = setInterval(() => moveBanner(1), 3000);
+}
+
+function renderBanner() {
+  const bannerProducts = document.getElementById('bannerCards');
+  const bannerDots = document.getElementById('bannerDots');
+  if (!bannerProducts || !bannerDots) return;
+
+  bannerProducts.innerHTML = '';
+  bannerDots.innerHTML = '';
+  const discountedProducts = productsList.filter(p => p.discountPrice);
+  const startIndex = bannerIndex * 2;
+  const selectedProducts = discountedProducts.length > 0 ? discountedProducts.slice(startIndex, startIndex + 2) : productsList.slice(startIndex, startIndex + 2);
+  selectedProducts.forEach(p => {
+    bannerProducts.innerHTML += `
+      <div class="banner-product" onclick="showProductDetails('${p.id}')">
+        <img src="${p.images[0]}" alt="${currentLang === 'uz' ? p.name : p.name_ru}">
+        <h4>${currentLang === 'uz' ? p.name : p.name_ru}</h4>
+      </div>
+    `;
+  });
+  const totalPages = Math.ceil((discountedProducts.length > 0 ? discountedProducts.length : productsList.length) / 2);
+  for (let i = 0; i < totalPages; i++) {
+    bannerDots.innerHTML += `<span class="dot ${i === bannerIndex ? 'active' : ''}" onclick="setBannerIndex(${i})"></span>`;
+  }
+  startAutoSlide();
+}
+
+function moveBanner(direction) {
+  const discountedProducts = productsList.filter(p => p.discountPrice);
+  const totalPages = Math.ceil((discountedProducts.length > 0 ? discountedProducts.length : productsList.length) / 2);
+  bannerIndex = (bannerIndex + direction + totalPages) % totalPages;
+  renderBanner();
+}
+
+function setBannerIndex(index) {
+  bannerIndex = index;
+  renderBanner();
+}
+
+function searchProducts() {
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!query) {
+    renderProducts(productsList);
+    return;
+  }
+  const filteredProducts = productsList.filter(p => 
+    (currentLang === 'uz' ? p.name.toLowerCase() : p.name_ru.toLowerCase()).includes(query)
+  );
+  renderProducts(filteredProducts);
+}
+
+function renderProducts(list = productsList) {
+  const container = document.getElementById('products');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const filteredList = list.filter(p => currentCategoryFilter === translations[currentLang].all || p.category === currentCategoryFilter);
+  filteredList.forEach(p => {
+    productImageIdxs[p.id] = productImageIdxs[p.id] || 0;
+    const currentImgIdx = productImageIdxs[p.id];
+    const discountPrice = p.discountPrice ? 
+      `<p style="text-decoration: line-through; color: #666;">${p.price.toLocaleString('uz-UZ')} so'm</p><p style="color: #e91e63;">${p.discountPrice.toLocaleString('uz-UZ')} so'm</p>` : 
+      `<p class="price">${p.price.toLocaleString('uz-UZ')} so'm</p>`;
+    const cartItem = cartItems.find(item => item.id === p.id);
+    const quantity = cartItem ? cartItem.quantity : 0;
+    const buttonHtml = quantity > 0 ? 
+      `<div class="quantity-selector">
+          <button onclick="decrementQuantity('${p.id}', '${currentLang === 'uz' ? p.name : p.name_ru}', ${p.discountPrice || p.price}, ${p.stock}, event)">-</button>
+          <span>${quantity}</span>
+          <button onclick="incrementQuantity('${p.id}', '${currentLang === 'uz' ? p.name : p.name_ru}', ${p.discountPrice || p.price}, ${p.stock}, event)">+</button>
+        </div>` :
+      `<button onclick="addToCart('${p.id}', '${currentLang === 'uz' ? p.name : p.name_ru}', ${p.discountPrice || p.price}, ${p.stock}, event)">${translations[currentLang].addToCartButton}</button>`;
+    container.innerHTML += `
+      <div class="product" onclick="showProductDetails('${p.id}')">
+        <div class="product-image-container">
+          <img src="${p.images[currentImgIdx]}" alt="${currentLang === 'uz' ? p.name : p.name_ru}" loading="lazy">
+        </div>
+        <h4>${currentLang === 'uz' ? p.name : p.name_ru}</h4>
+        ${discountPrice}
+        ${buttonHtml}
+      </div>
+    `;
+  });
+}
+
+function showProductDetails(productId) {
+  currentProductId = productId;
+  const product = productsList.find(p => p.id === productId);
+  if (!product) return;
+  currentImageIdx = productImageIdxs[productId] || 0;
+
+  document.getElementById('detailImage').src = product.images[currentImageIdx];
+  document.getElementById('detailName').textContent = currentLang === 'uz' ? product.name : product.name_ru;
+  document.getElementById('detailPrice').innerHTML = product.discountPrice ? 
+    `<span style="text-decoration: line-through; color: #666;">${product.price.toLocaleString('uz-UZ')} so'm</span> <span style="color: #e91e63;">${product.discountPrice.toLocaleString('uz-UZ')} so'm</span>` : 
+    `${product.price.toLocaleString('uz-UZ')} so'm`;
+  document.getElementById('detailImageGallery').innerHTML = product.images.map((img, idx) => 
+    `<img src="${img}" alt="${currentLang === 'uz' ? product.name : product.name_ru}" onclick="selectGalleryImage(${idx})">`
+  ).join('');
+  document.getElementById('detailDescription').innerHTML = `
+    ${translations[currentLang].receiptProducts}: ${product.stock} dona<br>
+    ${currentLang === 'uz' ? product.description : product.description_ru || 'N/A'}<br>
+    Reyting: ${product.rating || 'N/A'} (${product.reviews || 0} sharh)
+  `;
+  document.getElementById('productDetailsModal').classList.add('active');
+}
+
+function selectGalleryImage(index) {
+  currentImageIdx = index;
+  productImageIdxs[currentProductId] = index;
+  document.getElementById('detailImage').src = productsList.find(p => p.id === currentProductId).images[index];
+}
+
+function changeImage(direction) {
+  const product = productsList.find(p => p.id === currentProductId);
+  if (!product) return;
+  currentImageIdx = (currentImageIdx + direction + product.images.length) % product.images.length;
+  productImageIdxs[currentProductId] = currentImageIdx;
+  document.getElementById('detailImage').src = product.images[currentImageIdx];
+}
+
+function closeProductModal() {
+  document.getElementById('productDetailsModal').classList.remove('active');
+  currentProductId = null;
+}
+
+function addToCartModal() {
+  const product = productsList.find(p => p.id === currentProductId);
+  if (product) {
+    addToCart(product.id, currentLang === 'uz' ? product.name : product.name_ru, product.discountPrice || product.price, product.stock);
+  }
+  closeProductModal();
+}
+
+function showFullImage(src) {
+  document.getElementById('fullImage').src = src;
+  document.getElementById('imageModal').classList.add('active');
+}
+
+function closeImageModal() {
+  document.getElementById('imageModal').classList.remove('active');
+}
+
+function toggleCatalog() {
+  document.getElementById('catalogPanel').classList.toggle('active');
+}
+
+function closeCatalog() {
+  document.getElementById('catalogPanel').classList.remove('active');
+}
+
+function filterCategory(category) {
+  currentCategoryFilter = category;
+  closeCatalog();
+  renderProducts();
+}
+
+function addToCart(id, name, price, stock, event) {
+  if (event) event.stopPropagation();
+  const product = productsList.find(p => p.id === id);
+  if (!product) return;
+  const existingItem = cartItems.find(item => item.id === id);
+  if (existingItem) {
+    if (existingItem.quantity < stock) {
+      existingItem.quantity += 1;
+      updateProductStock(id, stock - existingItem.quantity);
+    } else {
+      alert(currentLang === 'uz' ? 'Mahsulot omborda yetarli emas!' : 'Недостаточно товара на складе!');
+      return;
+    }
+  } else {
+    if (stock > 0) {
+      cartItems.push({ id, name, price, quantity: 1 });
+      updateProductStock(id, stock - 1);
+    } else {
+      alert(currentLang === 'uz' ? 'Mahsulot omborda mavjud emas!' : 'Товара нет на складе!');
+      return;
+    }
+  }
+  updateCartDisplay();
+  renderProducts();
+}
+
+function incrementQuantity(id, name, price, stock, event) {
+  if (event) event.stopPropagation();
+  const existingItem = cartItems.find(item => item.id === id);
+  if (existingItem && existingItem.quantity < stock) {
+    existingItem.quantity += 1;
+    updateProductStock(id, stock - existingItem.quantity);
+  } else {
+    alert(currentLang === 'uz' ? 'Mahsulot omborda yetarli emas!' : 'Недостаточно товара на складе!');
+  }
+  updateCartDisplay();
+  renderProducts();
+}
+
+function decrementQuantity(id, name, price, stock, event) {
+  if (event) event.stopPropagation();
+  const existingItem = cartItems.find(item => item.id === id);
+  if (existingItem) {
+    existingItem.quantity -= 1;
+    if (existingItem.quantity <= 0) {
+      cartItems = cartItems.filter(item => item.id !== id);
+      updateProductStock(id, stock + 1);
+    } else {
+      updateProductStock(id, stock - existingItem.quantity);
+    }
+  }
+  updateCartDisplay();
+  renderProducts();
+}
+
+function updateProductStock(id, newStock) {
+  const product = productsList.find(p => p.id === id);
+  if (product) {
+    product.stock = newStock >= 0 ? newStock : 0;
+  }
+}
+
+function showCartModal() {
+  document.getElementById('cartModal').classList.add('active');
+  updateCartDisplay();
+  loadProfile();
+  loadSavedAddresses();
+  initMap();
+  togglePaymentFields();
+}
+
+function closeCartModal() {
+  document.getElementById('cartModal').classList.remove('active');
+  if (map) {
+    map.geoObjects.removeAll();
+    map = null;
+    marker = null;
+  }
+}
+
+function updateCartDisplay() {
+  const cartItemsDiv = document.getElementById('cartItems');
+  const totalPrice = document.getElementById('totalPrice');
+  const cartCount = document.getElementById('cartCount');
+  if (!cartItemsDiv || !totalPrice || !cartCount) return;
+
+  cartItemsDiv.innerHTML = '';
+  let total = 0;
+  let totalItems = 0;
+  cartItems.forEach(item => {
+    cartItemsDiv.innerHTML += `
+      <div class="cart-item">
+        <span>${item.name}</span>
+        <span>${item.price.toLocaleString('uz-UZ')} so'm x ${item.quantity}</span>
+      </div>
+    `;
+    total += item.price * item.quantity;
+    totalItems += item.quantity;
+  });
+  totalPrice.textContent = `${translations[currentLang].receiptTotal}: ${total.toLocaleString('uz-UZ')} so'm`;
+  cartCount.textContent = totalItems > 9 ? '9+' : totalItems;
+}
+
+function initMap() {
+  if (!map && typeof ymaps !== 'undefined') {
+    ymaps.ready(() => {
+      map = new ymaps.Map('map', {
+        center: [41.2995, 69.2401],
+        zoom: 10
+      });
+      map.events.add('click', e => {
+        const coords = e.get('coords');
+        if (marker) map.geoObjects.remove(marker);
+        marker = new ymaps.Placemark(coords, {}, { draggable: true });
+        map.geoObjects.add(marker);
+        ymaps.geocode(coords).then(res => {
+          const address = res.geoObjects.get(0).getAddressLine();
+          document.getElementById('selectedAddress').value = address;
+        });
+        marker.events.add('dragend', () => {
+          const newCoords = marker.geometry.getCoordinates();
+          ymaps.geocode(newCoords).then(res => {
+            const address = res.geoObjects.get(0).getAddressLine();
+            document.getElementById('selectedAddress').value = address;
+          });
+        });
+      });
+    });
+  }
+}
+
+function getCurrentLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      const coords = [position.coords.latitude, position.coords.longitude];
+      if (map) {
+        map.setCenter(coords, 15);
+        if (marker) map.geoObjects.remove(marker);
+        marker = new ymaps.Placemark(coords, {}, { draggable: true });
+        map.geoObjects.add(marker);
+        ymaps.geocode(coords).then(res => {
+          const address = res.geoObjects.get(0).getAddressLine();
+          document.getElementById('selectedAddress').value = address;
+        });
+        marker.events.add('dragend', () => {
+          const newCoords = marker.geometry.getCoordinates();
+          ymaps.geocode(newCoords).then(res => {
+            const address = res.geoObjects.get(0).getAddressLine();
+            document.getElementById('selectedAddress').value = address;
+          });
+        });
+      }
+    }, () => {
+      alert(currentLang === 'uz' ? 'Joylashuvni aniqlashda xatolik!' : 'Ошибка определения местоположения!');
+    });
+  } else {
+    alert(currentLang === 'uz' ? 'Geolokatsiya qo‘llab-quvvatlanmaydi!' : 'Геолокация не поддерживается!');
+  }
+}
+
+function togglePaymentFields() {
+  const paymentType = document.getElementById('paymentType').value;
+  const cardFields = document.getElementById('cardFields');
+  const creditFields = document.getElementById('creditFields');
+  cardFields.classList.add('hidden');
+  creditFields.classList.add('hidden');
+  document.getElementById('cardNumber').required = false;
+  document.getElementById('cardExpiry').required = false;
+  const creditInputs = creditFields.querySelectorAll('input, select');
+  creditInputs.forEach(input => input.required = false);
+
+  if (paymentType === 'card') {
+    cardFields.classList.remove('hidden');
+    document.getElementById('cardNumber').required = true;
+    document.getElementById('cardExpiry').required = true;
+  } else if (paymentType === 'credit') {
+    creditFields.classList.remove('hidden');
+    creditInputs.forEach(input => input.required = true);
+    document.getElementById('creditAdditionalPhone').required = false;
+  }
+}
+
+function submitCart() {
+  const phone = document.getElementById('phoneNumber').value.trim();
+  const additionalPhone = document.getElementById('additionalPhone').value.trim();
+  const address = document.getElementById('selectedAddress').value.trim();
+  const paymentType = document.getElementById('paymentType').value;
+  const agree = document.getElementById('agree').checked;
+  const salary = document.getElementById('salary')?.value?.trim();
+
+  if (!agree) {
+    alert(currentLang === 'uz' ? 'Iltimos, shartlarga rozilik bering!' : 'Пожалуйста, согласитесь с условиями!');
+    return;
+  }
+
+  if (!phone.match(/^\+998\d{9}$/)) {
+    alert(currentLang === 'uz' ? 'Telefon raqami noto‘g‘ri formatda!' : 'Номер телефона в неверном формате!');
+    return;
+  }
+
+  if (additionalPhone && !additionalPhone.match(/^\+998\d{9}$/)) {
+    alert(currentLang === 'uz' ? 'Qo‘shimcha telefon raqami noto‘g‘ri formatda!' : 'Дополнительный номер телефона в неверном формате!');
+    return;
+  }
+
+  if (!address) {
+    alert(currentLang === 'uz' ? 'Iltimos, manzilni tanlang!' : 'Пожалуйста, выберите адрес!');
+    return;
+  }
+
+  if (!address.toLowerCase().includes('uzbek')) {
+    alert(currentLang === 'uz' ? 'Faqat O‘zbekiston ichidagi manzillarni tanlash mumkin!' : 'Можно выбрать только адреса внутри Узбекистана!');
+    return;
+  }
+
+  if (paymentType === 'card') {
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const cardExpiry = document.getElementById('cardExpiry').value.trim();
+    if (!cardNumber.match(/^\d{4} \d{4} \d{4} \d{4}$/)) {
+      alert(currentLang === 'uz' ? 'Karta raqami noto‘g‘ri formatda!' : 'Номер карты в неверном формате!');
+      return;
+    }
+    if (!cardExpiry.match(/^\d{2}\/\d{2}$/)) {
+      alert(currentLang === 'uz' ? 'Karta amal qilish muddati noto‘g‘ri formatda!' : 'Срок действия карты в неверном формате!');
+      return;
+    }
+  } else if (paymentType === 'credit') {
+    const creditCardNumber = document.getElementById('creditCardNumber').value.trim();
+    const creditPhoneNumber = document.getElementById('creditPhoneNumber').value.trim();
+    const cardHolderName = document.getElementById('cardHolderName').value.trim();
+    const creditPassport = document.getElementById('creditPassport').value.trim();
+    const creditInn = document.getElementById('creditInn').value.trim();
+    const birthDate = document.getElementById('birthDate').value;
+    const permanentAddress = document.getElementById('permanentAddress').value.trim();
+    const registeredAddress = document.getElementById('registeredAddress').value.trim();
+    const creditCardExpiry = document.getElementById('creditCardExpiry').value.trim();
+    const cvv = document.getElementById('cvv').value.trim();
+    const months = document.getElementById('months').value;
+
+    if (!creditCardNumber.match(/^\d{4} \d{4} \d{4} \d{4}$/)) {
+      alert(currentLang === 'uz' ? 'Kredit karta raqami noto‘g‘ri formatda!' : 'Номер кредитной карты в неверном формате!');
+      return;
+    }
+    if (!creditPhoneNumber.match(/^\+998\d{9}$/)) {
+      alert(currentLang === 'uz' ? 'Telefon raqami noto‘g‘ri formatda!' : 'Номер телефона в неверном формате!');
+      return;
+    }
+    if (!cardHolderName) {
+      alert(currentLang === 'uz' ? 'Karta egasi ismini kiriting!' : 'Введите имя владельца карты!');
+      return;
+    }
+    if (!creditPassport.match(/^[A-Z]{2}\d{7}$|^ID\d+$/)) {
+      alert(currentLang === 'uz' ? 'Pasport yoki ID karta raqami noto‘g‘ri formatda!' : 'Паспорт или ID карты в неверном формате!');
+      return;
+    }
+    if (!creditInn.match(/^\d{12}$/)) {
+      alert(currentLang === 'uz' ? 'JSHSHIR noto‘g‘ri formatda!' : 'ИНН в неверном формате!');
+      return;
+    }
+    if (!birthDate) {
+      alert(currentLang === 'uz' ? 'Tug‘ilgan sanani kiriting!' : 'Введите дату рождения!');
+      return;
+    }
+    if (!permanentAddress || !registeredAddress) {
+      alert(currentLang === 'uz' ? 'Manzillarni to‘liq kiriting!' : 'Введите полный адрес!');
+      return;
+    }
+    if (!creditCardExpiry.match(/^\d{2}\/\d{2}$/)) {
+      alert(currentLang === 'uz' ? 'Karta amal qilish muddati noto‘g‘ri formatda!' : 'Срок действия карты в неверном формате!');
+      return;
+    }
+    if (!cvv.match(/^\d{3}$/)) {
+      alert(currentLang === 'uz' ? 'CVV kodi noto‘g‘ri formatda!' : 'Код CVV в неверном формате!');
+      return;
+    }
+    if (!salary || isNaN(salary) || salary <= 0) {
+      alert(currentLang === 'uz' ? 'Oylik daromadni to‘g‘ri kiriting!' : 'Введите корректный месячный доход!');
+      return;
+    }
+  }
+
+  if (cartItems.length === 0) {
+    alert(currentLang === 'uz' ? 'Savat bo‘sh!' : 'Корзина пуста!');
+    return;
+  }
+
+  savedAddresses.push({ address, timestamp: new Date().toISOString() });
+  localStorage.setItem('savedAddresses', JSON.stringify(savedAddresses));
+
+  const receiptContent = `
+    <p>${translations[currentLang].receiptName} ${profile.firstName || 'N/A'}</p>
+    <p>${translations[currentLang].receiptLastName} ${profile.lastName || 'N/A'}</p>
+    <p>${translations[currentLang].receiptAddress} ${address}</p>
+    <p>${translations[currentLang].receiptPhone} ${phone}</p>
+    <p>${translations[currentLang].receiptOrderTime} ${new Date().toLocaleString()}</p>
+    <p>${translations[currentLang].receiptProducts}</p>
+    ${cartItems.map(item => `<p>${item.name}: ${item.quantity} x ${item.price.toLocaleString('uz-UZ')} so'm</p>`).join('')}
+    <p><strong>${translations[currentLang].receiptTotal}: ${cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString('uz-UZ')} so'm</strong></p>
+  `;
+  document.getElementById('receipt-content').innerHTML = receiptContent;
+  document.getElementById('receiptModal').classList.add('active');
+
+  cartItems = [];
+  updateCartDisplay();
+  renderProducts();
+  closeCartModal();
+}
+
+function loadSavedAddresses() {
+  const savedAddressesList = document.getElementById('savedAddressesList');
+  if (!savedAddressesList) return;
+
+  savedAddressesList.innerHTML = '';
+  if (savedAddresses.length === 0) {
+    savedAddressesList.innerHTML = `<p>${translations[currentLang].noSavedAddresses}</p>`;
+    return;
+  }
+
+  savedAddresses.forEach((item, index) => {
+    savedAddressesList.innerHTML += `
+      <div class="saved-address-item">
+        <span>${item.address}</span>
+        <button class="select-btn" onclick="selectAddress(${index})">${currentLang === 'uz' ? 'Tanlash' : 'Выбрать'}</button>
+        <button class="delete-btn" onclick="deleteAddress(${index})">${currentLang === 'uz' ? 'O‘chirish' : 'Удалить'}</button>
+      </div>
+    `;
+  });
+}
+
+function selectAddress(index) {
+  const address = savedAddresses[index].address;
+  document.getElementById('selectedAddress').value = address;
+  if (map && marker) {
+    ymaps.geocode(address).then(res => {
+      const coords = res.geoObjects.get(0).geometry.getCoordinates();
+      map.setCenter(coords, 15);
+      map.geoObjects.remove(marker);
+      marker = new ymaps.Placemark(coords, {}, { draggable: true });
+      map.geoObjects.add(marker);
+    });
+  }
+}
+
+function deleteAddress(index) {
+  savedAddresses.splice(index, 1);
+  localStorage.setItem('savedAddresses', JSON.stringify(savedAddresses));
+  loadSavedAddresses();
+}
+
+function showProfileModal() {
+  document.getElementById('profileModal').classList.add('active');
+  loadProfile();
+}
+
+function loadProfile() {
+  document.getElementById('firstName').value = profile.firstName || '';
+  document.getElementById('lastName').value = profile.lastName || '';
+  document.getElementById('profilePhone').value = profile.phone || '';
+}
+
+function sendSMS() {
+  const phone = document.getElementById('profilePhone').value.trim();
+  if (!phone.match(/^\+998\d{9}$/)) {
+    alert(currentLang === 'uz' ? 'Telefon raqami noto‘g‘ri formatda!' : 'Номер телефона в неверном формате!');
+    return;
+  }
+  smsCode = Math.floor(1000 + Math.random() * 9000).toString();
+  alert(`SMS kod: ${smsCode}`);
+  document.getElementById('smsCodeLabel').style.display = 'block';
+  document.getElementById('smsCode').style.display = 'block';
+}
+
+function saveProfile() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const phone = document.getElementById('profilePhone').value.trim();
+  const enteredCode = document.getElementById('smsCode').value.trim();
+
+  if (!firstName || !lastName || !phone) {
+    alert(currentLang === 'uz' ? 'Iltimos, barcha maydonlarni to‘ldiring!' : 'Пожалуйста, заполните все поля!');
+    return;
+  }
+
+  if (!phone.match(/^\+998\d{9}$/)) {
+    alert(currentLang === 'uz' ? 'Telefon raqami noto‘g‘ri formatda!' : 'Номер телефона в неверном формате!');
+    return;
+  }
+
+  if (smsCode && enteredCode !== smsCode) {
+    alert(currentLang === 'uz' ? 'SMS kod noto‘g‘ri!' : 'Неверный SMS код!');
+    return;
+  }
+
+  profile = { firstName, lastName, phone };
+  localStorage.setItem('profile', JSON.stringify(profile));
+  alert(currentLang === 'uz' ? 'Profil saqlandi!' : 'Профиль сохранён!');
+  document.getElementById('smsCodeLabel').style.display = 'none';
+  document.getElementById('smsCode').style.display = 'none';
+  smsCode = null;
+  closeProfileModal();
+}
+
+function closeProfileModal() {
+  document.getElementById('profileModal').classList.remove('active');
+}
+
+function closeReceiptModal() {
+  document.getElementById('receiptModal').classList.remove('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateLang();
+  renderBanner();
+  renderProducts();
+  document.getElementById('searchInput').addEventListener('input', searchProducts);
+});
+
+</script>
+</body>
+</html>
